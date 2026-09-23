@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KeyForge - Modern Cryptographic Password Generator</title>
+    <meta name="description" content="Generate high-entropy, cryptographically secure passwords locally in your browser with KeyForge." />
+    <meta property="og:title" content="KeyForge - Modern Cryptographic Password Generator" />
+    <meta property="og:description" content="Generate high-entropy, cryptographically secure passwords locally in your browser with KeyForge." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <div class="app-container" id="keyforgeApp">
+      <!-- Header -->
+      <header class="app-header">
+        <div class="brand-badge">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+          Client-Side Security
+        </div>
+        <h1 class="app-title" id="appTitle">
+          Key<span class="highlight">Forge</span>
+        </h1>
+        <p class="app-description">
+          Generate strong, high-entropy passwords directly in your browser using the Web Cryptography API.
+        </p>
+      </header>
+
+      <!-- Main Generator Card -->
+      <main class="card" id="generatorCard">
+        <!-- Password Display Output -->
+        <section class="display-wrapper" aria-label="Generated Password Output">
+          <input
+            type="text"
+            id="passwordOutput"
+            class="password-input"
+            readonly
+            spellcheck="false"
+            autocomplete="off"
+            aria-label="Generated Password"
+          />
+          <div class="display-actions">
+            <!-- Refresh / Regenerate Quick Button -->
+            <button
+              type="button"
+              id="refreshBtn"
+              class="btn-icon"
+              title="Generate new password"
+              aria-label="Generate new password"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                <path d="M3 3v5h5"/>
+                <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/>
+                <path d="M16 21h5v-5"/>
+              </svg>
+            </button>
+
+            <!-- Quick Copy Icon Button -->
+            <button
+              type="button"
+              id="copyIconBtn"
+              class="btn-icon"
+              title="Copy password to clipboard"
+              aria-label="Copy password to clipboard"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+                <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+              </svg>
+            </button>
+          </div>
+        </section>
+
+        <!-- Password Strength Indicator -->
+        <section class="strength-section" aria-label="Password Strength">
+          <div class="strength-header">
+            <span class="strength-title">Password Strength</span>
+            <span id="strengthBadge" class="strength-badge strong">Strong</span>
+          </div>
+          <div class="strength-bars" aria-hidden="true">
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+          </div>
+          <p id="strengthInfo" class="strength-info">16 characters • Excellent complexity.</p>
+        </section>
+
+        <div class="divider"></div>
+
+        <!-- Length Slider & Presets -->
+        <section class="control-group" aria-label="Password Length Control">
+          <div class="control-header">
+            <label for="lengthSlider" class="control-label">Password Length</label>
+            <span id="lengthValue" class="length-badge">16</span>
+          </div>
+
+          <div class="range-container">
+            <div class="slider-wrapper">
+              <input
+                type="range"
+                id="lengthSlider"
+                class="range-slider"
+                min="8"
+                max="32"
+                value="16"
+                step="1"
+              />
+            </div>
+            <div class="range-ticks">
+              <span>8 chars</span>
+              <span>20 chars</span>
+              <span>32 chars</span>
+            </div>
+          </div>
+
+          <!-- Quick Presets -->
+          <div class="preset-buttons" aria-label="Length Presets">
+            <button type="button" class="btn-preset" data-length="8">8</button>
+            <button type="button" class="btn-preset" data-length="12">12</button>
+            <button type="button" class="btn-preset active" data-length="16">16</button>
+            <button type="button" class="btn-preset" data-length="20">20</button>
+            <button type="button" class="btn-preset" data-length="24">24</button>
+            <button type="button" class="btn-preset" data-length="32">32</button>
+          </div>
+        </section>
+
+        <div class="divider"></div>
+
+        <!-- Character Options Toggles -->
+        <section class="control-group" aria-label="Character Options">
+          <div class="control-header">
+            <span class="control-label">Character Settings</span>
+          </div>
+
+          <div class="options-list">
+            <!-- Uppercase Toggle -->
+            <label class="option-item" for="toggleUppercase">
+              <div class="option-info">
+                <span class="option-name">Uppercase Letters</span>
+                <span class="option-sample">A–Z</span>
+              </div>
+              <div class="switch">
+                <input type="checkbox" id="toggleUppercase" checked />
+                <span class="slider"></span>
+              </div>
+            </label>
+
+            <!-- Lowercase Toggle -->
+            <label class="option-item" for="toggleLowercase">
+              <div class="option-info">
+                <span class="option-name">Lowercase Letters</span>
+                <span class="option-sample">a–z</span>
+              </div>
+              <div class="switch">
+                <input type="checkbox" id="toggleLowercase" checked />
+                <span class="slider"></span>
+              </div>
+            </label>
+
+            <!-- Numbers Toggle -->
+            <label class="option-item" for="toggleNumbers">
+              <div class="option-info">
+                <span class="option-name">Numbers</span>
+                <span class="option-sample">0–9</span>
+              </div>
+              <div class="switch">
+                <input type="checkbox" id="toggleNumbers" checked />
+                <span class="slider"></span>
+              </div>
+            </label>
+
+            <!-- Symbols Toggle -->
+            <label class="option-item" for="toggleSymbols">
+              <div class="option-info">
+                <span class="option-name">Symbols</span>
+                <span class="option-sample">!@#$%^&amp;*</span>
+              </div>
+              <div class="switch">
+                <input type="checkbox" id="toggleSymbols" checked />
+                <span class="slider"></span>
+              </div>
+            </label>
+          </div>
+
+          <!-- Minimum Selection Warning -->
+          <div id="warningToast" class="warning-toast">
+            At least one character option must remain active.
+          </div>
+        </section>
+
+        <!-- Action Buttons -->
+        <section class="actions-grid">
+          <button type="button" id="generateBtn" class="btn-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+            </svg>
+            Generate Password
+          </button>
+
+          <button type="button" id="copyBtn" class="btn-secondary">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+              <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+            </svg>
+            Copy Password
+          </button>
+        </section>
+
+        <!-- Security and Privacy Banner -->
+        <footer class="privacy-note">
+          <div class="privacy-icon" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="m9 12 2 2 4-4"/>
+            </svg>
+          </div>
+          <p class="privacy-text">
+            <strong>Cryptographically Private:</strong> Generated locally with <code>crypto.getRandomValues()</code>. Passwords are never saved, stored, or sent to any server.
+          </p>
+        </footer>
+      </main>
+    </div>
+
+    <!-- Floating Copy Toast Notification -->
+    <div id="toast" class="toast" role="status" aria-live="polite">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+      <span>Password copied to clipboard!</span>
+    </div>
+
+    <!-- Application Script -->
+    <script type="module" src="./script.js"></script>
+  </body>
+</html>
+
