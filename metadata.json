@@ -1,0 +1,6 @@
+{
+  "name": "KeyForge",
+  "description": "A modern, secure dark-themed password generator powered by the Web Cryptography API.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
